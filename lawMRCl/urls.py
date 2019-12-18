@@ -25,5 +25,6 @@ urlpatterns = [
     path('chartsPage', pageView.chartsPage),
     path('queryPage', pageView.queryPage),
     path('tablesPage', pageView.tablesPage),
-    path('user/login', userView.login)
+    path('user/login', userView.login),
+    path('user/crawl', userView.crawl)
 ]

@@ -1,7 +1,8 @@
 $("#crawlBtn").click(function(){
+	event.preventDefault();
 	$.ajax({
 		type:"POST",
-		url:"/user/login",
+		url:"/user/crawl",
 		data: {
 			keyword:  $("#keyword").val(),
 			pageNum: $("#pageNum").val(),
@@ -12,6 +13,7 @@ $("#crawlBtn").click(function(){
 			if(jsonobj.resultCode=="10001")
 			{
 				//登录成功
+				alert("爬取成功");
 	    		window.location.href = "/queryPage";
 			}
 			else
