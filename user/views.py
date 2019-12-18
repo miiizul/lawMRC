@@ -95,7 +95,7 @@ def crawl(request):
         # chrome-headless
         chrome_options = Options()
         # 无头模式启动
-        chrome_options.add_argument('--headless')
+      #  chrome_options.add_argument('--headless')
         # 谷歌文档提到需要加上这个属性来规避bug
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--start-maximized')
@@ -129,9 +129,13 @@ def crawl(request):
                 driver.find_element_by_class_name("search-box-btn").click()
                 time.sleep(3)
 
-                j = 1
+                # 加载更多
+                # j = 1
+                # for j in range(4):
+                #     element = driver.find_element_by_xpath("//button[@class='view-more ng-scope']")
+                #     element.click()
+                #     time.sleep(3)
 
-                lit = driver.find_elements_by_class_name("judgement ng-scope")
                 lis = driver.find_elements_by_xpath('//div[@class = "judgements"]/div[@class="judgement ng-scope"]')
 
                 for i in range(len(lis)):
@@ -139,17 +143,21 @@ def crawl(request):
                     i = i + 1
                     print("在这里")
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
+                    #title
+                    title = driver.find_element_by_xpath(div_str).text
+                    div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
                     driver.find_element_by_xpath(div_str).click()
                     print("点击完成")
                     all_h = driver.window_handles
                     driver.switch_to.window(all_h[1])
                     h2 = driver.current_window_handle
                     print('已定位到元素')
+                    time.sleep(3)
                     try:
                         wenshu = driver.find_element_by_xpath('//section[@class="paragraphs ng-isolate-scope"]').text
                         wenshu1 = wenshu[0:1000]
                         wenshu2 = wenshu[1000:2000]
-                        wenshu3 = wenshu[3000:4000]
+                        wenshu3 = wenshu[2000:3000]
                         wenshu4 = wenshu[4000:5000]
                         wenshu5 = wenshu[5000:6000]
                         wenshu6 = wenshu[6000:7000]
@@ -165,7 +173,7 @@ def crawl(request):
                         wenshu16 = wenshu[17000:18000]
                         wenshu17 = wenshu[18000:19000]
                         wenshu18 = wenshu[19000:20000]
-                        f = open('./data/train.txt', 'a')
+                        f = open('./data/' + title + '.txt', 'a')
                         f.write(wenshu1)
                         f.write(wenshu2)
                         f.write(wenshu3)
