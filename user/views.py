@@ -106,6 +106,8 @@ def crawl(request):
         url = "https://www.itslaw.com/search?searchMode=judgements&sortType=1&conditions=searchWord%2B%E6%B3%95%E5%BE%8B%2B1%2B%E6%B3%95%E5%BE%8B&searchView=text"
         driver.get(url)
         # 点击登录
+        o=0
+        p=0
         while 1:
             try:
                 driver.find_element_by_class_name("login-btn").click()
@@ -145,14 +147,50 @@ def crawl(request):
                     print('已定位到元素')
                     try:
                         wenshu = driver.find_element_by_xpath('//section[@class="paragraphs ng-isolate-scope"]').text
-                        wenshu = wenshu[0:10000]
+                        wenshu1 = wenshu[0:1000]
+                        wenshu2 = wenshu[1000:2000]
+                        wenshu3 = wenshu[3000:4000]
+                        wenshu4 = wenshu[4000:5000]
+                        wenshu5 = wenshu[5000:6000]
+                        wenshu6 = wenshu[6000:7000]
+                        wenshu7 = wenshu[7000:8000]
+                        wenshu8 = wenshu[8000:9000]
+                        wenshu9 = wenshu[9000:10000]
+                        wenshu10 = wenshu[10000:11000]
+                        wenshu11 = wenshu[11000:12000]
+                        wenshu12 = wenshu[13000:14000]
+                        wenshu13 = wenshu[14000:15000]
+                        wenshu14 = wenshu[15000:16000]
+                        wenshu15 = wenshu[16000:17000]
+                        wenshu16 = wenshu[17000:18000]
+                        wenshu17 = wenshu[18000:19000]
+                        wenshu18 = wenshu[19000:20000]
                         f = open('./data/train.txt', 'a')
-                        f.write(wenshu)
+                        f.write(wenshu1)
+                        f.write(wenshu2)
+                        f.write(wenshu3)
+                        f.write(wenshu4)
+                        f.write(wenshu5)
+                        f.write(wenshu6)
+                        f.write(wenshu7)
+                        f.write(wenshu8)
+                        f.write(wenshu9)
+                        f.write(wenshu10)
+                        f.write(wenshu11)
+                        f.write(wenshu12)
+                        f.write(wenshu13)
+                        f.write(wenshu14)
+                        f.write(wenshu15)
+                        f.write(wenshu16)
+                        f.write(wenshu17)
+                        f.write(wenshu18)
                         f.write('\n')
                         f.close()
                         print("成功")
+                        o=o+1
                     except:
                         print("失败")
+                        p=p+1
                     driver.close()
                     driver.switch_to.window(all_h[0])
 
@@ -160,6 +198,8 @@ def crawl(request):
                 result = "ok"
                 json['resultCode'] = '10001'
                 json['resultDesc'] = '爬取成功'
+                print(o)
+                print(p)
                 print('关闭')
                 # end = time.process_time()
                 break
