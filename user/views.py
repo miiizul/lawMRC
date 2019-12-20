@@ -56,6 +56,7 @@ def login(request):
     return JsonResponse(json)
 
 
+
 def crawl(request):
     print('进入接口crawl')
     json = {}
@@ -70,6 +71,7 @@ def crawl(request):
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
         import time
+        import hashlib
 
         # #正常模式
         # chrome_options = webdriver.ChromeOptions()
@@ -145,6 +147,9 @@ def crawl(request):
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
                     #title
                     title = driver.find_element_by_xpath(div_str).text
+                    hl = hashlib.md5()
+                    hl.update(title.encode(encoding='utf-8'))
+                    title=hl.hexdigest()
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
                     driver.find_element_by_xpath(div_str).click()
                     print("点击完成")
@@ -215,6 +220,8 @@ def crawl(request):
                 print("还未定位到元素!")
 
     return JsonResponse(json)
+
+
 
 def readcomprehend(request):
     print('进入接口readcomprehend')
