@@ -26,5 +26,6 @@ urlpatterns = [
     path('queryPage', pageView.queryPage),
     path('tablesPage', pageView.tablesPage),
     path('user/login', userView.login),
-    path('user/crawl', userView.crawl)
+    path('user/crawl', userView.crawl),
+    path('user/mrc', userView.readcomprehend)
 ]

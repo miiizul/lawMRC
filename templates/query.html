@@ -98,24 +98,26 @@
                                 <h3 class="h6 text-uppercase mb-2">Input Questions</h3>
                             </div>
                             <div class="card-body">
+                                <p class="mb-4">爬取成功！</p>
                                 <p>本次查询的关键词为：</p>
-                                <p>本次查询的篇数为：</p>
                                 <div class="line"></div>
+
 
                                 <form class="form-horizontal">
                                     <div class="form-group row">
                                         <label class="col-md-3 form-control-label">Question(s)</label>
                                         <div class="col-md-9">
-                                            <input type="text" name="keyword" class="form-control" placeholder="请输入问题，可输入多个，用 ; 隔开">
+                                            <input type="text" id="questions" class="form-control" placeholder="请输入问题，可输入多个，用 ; 隔开">
                                         </div>
                                     </div>
                                     <div class="line"></div>
                                     <div class="form-group row">
                                         <div class="col-md-9 ml-auto">
-                                            <button type="submit" class="btn btn-primary">&nbsp;&nbsp;&nbsp;Start&nbsp;&nbsp;MRC&nbsp;&nbsp;&nbsp;</button>
+                                            <button type="submit" id="mrcBtn" class="btn btn-primary">&nbsp;&nbsp;&nbsp;Start&nbsp;&nbsp;MRC&nbsp;&nbsp;&nbsp;</button>
                                         </div>
                                     </div>
                                 </form>
+
                             </div>
                         </div>
                     </div>
@@ -174,5 +176,7 @@
 <script src="/static/vendor/chart.js/Chart.min.js"></script>
 <script src="/static/js/js.cookie.min.js"></script>
 <script src="/static/js/front.js"></script>
+<script src="/static/js/jquery-1.10.2.js"></script>
+<script src="/static/js/query.js"></script>
 </body>
 </html>

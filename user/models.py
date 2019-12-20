@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+
 from django.db import models
 
 
@@ -144,7 +145,6 @@ class DjangoSession(models.Model):
 class Keyword(models.Model):
     k_id = models.AutoField(primary_key=True)
     k_keyword = models.CharField(max_length=255)
-    u = models.ForeignKey('User', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -155,7 +155,6 @@ class Question(models.Model):
     q_id = models.AutoField(primary_key=True)
     q_name = models.CharField(max_length=255)
     k = models.ForeignKey(Keyword, models.DO_NOTHING)
-    u = models.ForeignKey('User', models.DO_NOTHING)
 
     class Meta:
         managed = False

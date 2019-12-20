@@ -216,6 +216,20 @@ def crawl(request):
 
     return JsonResponse(json)
 
+def readcomprehend(request):
+    print('进入接口readcomprehend')
+    json = {}
+
+    if request.method == "POST":
+        questions = request.POST.get("questions")
+        print(questions)
+
+    json['resultCode'] = '10001'
+    json['resultDesc'] = '操作成功'
+    json['data'] = questions
+
+    return JsonResponse(json)
+
 
 def dataAnalysis(request):
     print('进入接口classAnalysis')
@@ -223,17 +237,16 @@ def dataAnalysis(request):
     if request.method == "POST":
         questions = request.POST.get('questions')
         keyword = request.POST.get('keyword')
-        u_id = request.session.get('u_id')
 
         questionList = questions.split(';')
 
         if len(questionList) > 0 and keyword.strip() != '':
             try:
-                k_id = models.Keyword.objects.get(k_keyword=keyword, u_id=u_id)
+                k_id = models.Keyword.objects.get(k_keyword=keyword)
 
                 for question in questionList:
                     try:
-                        q_id = models.Question.objects.get(q_name=question, k_id=k_id, u_id=u_id)
+                        q_id = models.Question.objects.get(q_name=question, k_id=k_id)
                         try:
                             answers = models.Answer.objects.filter(q_id=q_id, k_id=k_id).values_list('a_answer')
                             answer_classes = list(set(answers))
@@ -257,5 +270,17 @@ def dataAnalysis(request):
         else:
             json['resultCode'] = '30000'
             json['resultDesc'] = '服务器故障'
+
+    return JsonResponse(json)
+
+def regressionAnalysis(request):
+    print('进入接口regressionAnalysis')
+    json = {}
+
+    return JsonResponse(json)
+
+def clusterAnalysis(request):
+    print('进入接口clusterAnalysis')
+    json = {}
 
     return JsonResponse(json)
