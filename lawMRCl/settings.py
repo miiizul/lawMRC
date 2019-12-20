@@ -85,7 +85,7 @@ DATABASES = {
         # 连接数据库的用户名
         'USER': 'root',
         # 连接数据库的密码
-        'PASSWORD': 'mssjwow123',
+        'PASSWORD': 'admin',
         # 数据库的主机地址
         'HOST': '127.0.0.1',
         # 数据库的端口号
