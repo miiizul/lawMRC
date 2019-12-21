@@ -149,7 +149,8 @@ def crawl(request):
                     title = driver.find_element_by_xpath(div_str).text
                     hl = hashlib.md5()
                     hl.update(title.encode(encoding='utf-8'))
-                    title=hl.hexdigest()
+                    #md5
+                    title_md5=hl.hexdigest()
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
                     driver.find_element_by_xpath(div_str).click()
                     print("点击完成")
@@ -160,43 +161,8 @@ def crawl(request):
                     time.sleep(3)
                     try:
                         wenshu = driver.find_element_by_xpath('//section[@class="paragraphs ng-isolate-scope"]').text
-                        wenshu1 = wenshu[0:1000]
-                        wenshu2 = wenshu[1000:2000]
-                        wenshu3 = wenshu[2000:3000]
-                        wenshu4 = wenshu[4000:5000]
-                        wenshu5 = wenshu[5000:6000]
-                        wenshu6 = wenshu[6000:7000]
-                        wenshu7 = wenshu[7000:8000]
-                        wenshu8 = wenshu[8000:9000]
-                        wenshu9 = wenshu[9000:10000]
-                        wenshu10 = wenshu[10000:11000]
-                        wenshu11 = wenshu[11000:12000]
-                        wenshu12 = wenshu[13000:14000]
-                        wenshu13 = wenshu[14000:15000]
-                        wenshu14 = wenshu[15000:16000]
-                        wenshu15 = wenshu[16000:17000]
-                        wenshu16 = wenshu[17000:18000]
-                        wenshu17 = wenshu[18000:19000]
-                        wenshu18 = wenshu[19000:20000]
-                        f = open('./data/' + title + '.txt', 'a')
-                        f.write(wenshu1)
-                        f.write(wenshu2)
-                        f.write(wenshu3)
-                        f.write(wenshu4)
-                        f.write(wenshu5)
-                        f.write(wenshu6)
-                        f.write(wenshu7)
-                        f.write(wenshu8)
-                        f.write(wenshu9)
-                        f.write(wenshu10)
-                        f.write(wenshu11)
-                        f.write(wenshu12)
-                        f.write(wenshu13)
-                        f.write(wenshu14)
-                        f.write(wenshu15)
-                        f.write(wenshu16)
-                        f.write(wenshu17)
-                        f.write(wenshu18)
+                        f = open('./data/' + title_md5 + '.txt', 'a')
+                        f.write(wenshu)
                         f.write('\n')
                         f.close()
                         print("成功")
@@ -291,3 +257,19 @@ def clusterAnalysis(request):
     json = {}
 
     return JsonResponse(json)
+
+# def read(request):
+#     question = request.POST.get("question")
+#     if question:
+#         UserModel.objects.create()  # 增
+#         UserModel.objects.get()  # 查（只查看一条数据）
+#         UserModel.objects.filter()  # 查看多条数据
+#         UserModel.objects.filter().update()  # 改
+#         UserModel.objects.filter().delete()  # 删
+#         QsModel.objects.create(
+#             question = question,)
+#         result = "OK"
+#     else:
+#         result = "Not OK"
+#     print(question)
+#     return render(request, "login/read.html", locals())
