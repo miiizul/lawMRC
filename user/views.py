@@ -64,6 +64,7 @@ def crawl(request):
         keyword = request.POST.get("keyword")
         pageNum = request.POST.get("pageNum")
 
+
         # 存储到数据库
         print(keyword, pageNum)
         # UserModel.objects.create()  # 增
@@ -71,7 +72,10 @@ def crawl(request):
         # UserModel.objects.filter()  # 查看多条数据
         # UserModel.objects.filter().update()  # 改
         # UserModel.objects.filter().delete()  # 删
-        models.Keyword.objects.create(k_keyword=keyword)
+        keyword_obj = models.Keyword.objects.create(k_keyword=keyword)
+        obj_id = keyword_obj.k_id
+        print(obj_id)
+        print(type(obj_id))
 
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
@@ -157,9 +161,10 @@ def crawl(request):
                     #md5
                     title_md5=hl.hexdigest()
 
-                    print(title,title_md5)
+                    print(title,obj_id,title_md5)
+
                     # 存数据库
-                    models.Crawl.objects.create(c_title=title, c_path=title_md5)
+                    models.Crawl.objects.create(c_title=title, c_path=title_md5, k_id=obj_id, c_keyword=keyword)
                     # models.Crawl.objects.create(c_keyword=keyword)
                     # models.Crawl.objects.create(c_title=title)
                     # models.Crawl.objects.create(c_path=title_md5)
