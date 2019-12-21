@@ -159,8 +159,9 @@ def crawl(request):
 
                     print(title,title_md5)
                     # 存数据库
-                    models.Crawl.objects.create(c_title=title, c_path=title_md5)
-                    # models.Crawl.objects.create(c_keyword=keyword)
+                  #  models.Keyword.objects.create(k_keyword=title)
+                    models.Crawl.objects.create(title=title, md5=title_md5,k_keyword=keyword)
+                  #  models.Crawl2.objects.create(title=title)
                     # models.Crawl.objects.create(c_title=title)
                     # models.Crawl.objects.create(c_path=title_md5)
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
