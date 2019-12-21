@@ -66,7 +66,12 @@ def crawl(request):
 
         # 存储到数据库
         print(keyword, pageNum)
-        # models.Keyword.objects.create(keyword=keyword)
+        # UserModel.objects.create()  # 增
+        # UserModel.objects.get()  # 查（只查看一条数据）
+        # UserModel.objects.filter()  # 查看多条数据
+        # UserModel.objects.filter().update()  # 改
+        # UserModel.objects.filter().delete()  # 删
+        models.Keyword.objects.create(k_keyword=keyword)
 
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
@@ -97,7 +102,7 @@ def crawl(request):
         # chrome-headless
         chrome_options = Options()
         # 无头模式启动
-      #  chrome_options.add_argument('--headless')
+        #chrome_options.add_argument('--headless')
         # 谷歌文档提到需要加上这个属性来规避bug
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--start-maximized')
@@ -151,6 +156,13 @@ def crawl(request):
                     hl.update(title.encode(encoding='utf-8'))
                     #md5
                     title_md5=hl.hexdigest()
+
+                    print(title,title_md5)
+                    # 存数据库
+                    models.Crawl.objects.create(c_title=title, c_path=title_md5)
+                    # models.Crawl.objects.create(c_keyword=keyword)
+                    # models.Crawl.objects.create(c_title=title)
+                    # models.Crawl.objects.create(c_path=title_md5)
                     div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
                     driver.find_element_by_xpath(div_str).click()
                     print("点击完成")
@@ -170,10 +182,12 @@ def crawl(request):
                     except:
                         print("失败")
                         p=p+1
+
                     driver.close()
                     driver.switch_to.window(all_h[0])
 
                 driver.close()
+
                 result = "ok"
                 json['resultCode'] = '10001'
                 json['resultDesc'] = '爬取成功'
