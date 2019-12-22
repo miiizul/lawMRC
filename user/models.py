@@ -5,7 +5,6 @@
 #   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-
 from django.db import models
 
 
@@ -87,6 +86,16 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
+class Crawl(models.Model):
+    c_id = models.AutoField(primary_key=True)
+    c_title = models.CharField(max_length=255)
+    c_path = models.CharField(max_length=255)
+    k = models.ForeignKey('Keyword', models.DO_NOTHING)
+    c_keyword = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'crawl'
 
 
 class DjangoAdminLog(models.Model):
@@ -141,27 +150,7 @@ class Keyword(models.Model):
         managed = False
         db_table = 'keyword'
 
-# class Crawl(models.Model):
-#     c_id = models.AutoField(primary_key=True)
-#     c_title = models.CharField(max_length=255)
-#    # k = models.ForeignKey('Keyword', models.DO_NOTHING)
-#     c_path = models.CharField(max_length=255)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'crawl'
 
-
-class Crawl(models.Model):
-
-    c2_id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255)
-    md5  = models.CharField(max_length=255)
-    k_keyword=models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'crawl'
 class Question(models.Model):
     q_id = models.AutoField(primary_key=True)
     q_name = models.CharField(max_length=255)

@@ -56,6 +56,7 @@ def login(request):
     return JsonResponse(json)
 
 
+
 def crawl(request):
     print('进入接口crawl')
     json = {}
@@ -63,177 +64,157 @@ def crawl(request):
         keyword = request.POST.get("keyword")
         pageNum = request.POST.get("pageNum")
 
-        if keyword.strip() == '' or pageNum.strip() == '':
-            json['resultCode'] = '20000'
-            json['resultDesc'] = '参数不全'
-        else:
-            try:
-                keyword_obj = models.Keyword.objects.get(k_keyword=keyword)
-            except:
-                keyword_obj = models.Keyword.objects.create(k_keyword=keyword)
-
-            print(keyword_obj.k_id)
-
-            try:
-                crawl_obj = models.Crawl.objects.filter(k_id=keyword_obj.k_id).first()
-                print('查到了crawl表')
-                json['resultCode'] = '10001'
-                json['resultDesc'] = '爬取成功'
-            except:
-                print('没查到')
-                from selenium import webdriver
-                from selenium.webdriver.chrome.options import Options
-                import time
-                import hashlib
-
-                # #正常模式
-                # chrome_options = webdriver.ChromeOptions()
-                # chrome_options.add_argument('--start-maximized')
-                # #无头模式启动
-                # chrome_options.add_argument('--headless')
-                # #谷歌文档提到需要加上这个属性来规避bug
-                # chrome_options.add_argument('--disable-gpu')
-                # plugin_file = './spider/utils/proxy_auth_plugin.zip'
-                # chrome_options.add_extension(plugin_file)
-
-                # firefox-headless
-                # from selenium import webdriver
-                # options = webdriver.FirefoxOptions()
-                # options.set_headless()
-                # # options.add_argument('-headless')
-                # options.add_argument('--disable-gpu')
-                # driver = webdriver.Firefox(firefox_options=options)
-                # driver.get('http://httpbin.org/user-agent')
-                # driver.get_screenshot_as_file('test.png')
-                # driver.close()
-
-                # chrome-headless
-                chrome_options = Options()
-                # 无头模式启动
-                # chrome_options.add_argument('--headless')
-                # 谷歌文档提到需要加上这个属性来规避bug
-                chrome_options.add_argument('--disable-gpu')
-                chrome_options.add_argument('--start-maximized')
-                # 初始化实例
-                driver = webdriver.Chrome(options=chrome_options)
-                #    self.browser = webdriver.Chrome(chrome_options=self.chrome_options)
-                # wait = WebDriverWait(driver, TIMEOUT)
-                url = "https://www.itslaw.com/search?searchMode=judgements&sortType=1&conditions=searchWord%2B%E6%B3%95%E5%BE%8B%2B1%2B%E6%B3%95%E5%BE%8B&searchView=text"
-                driver.get(url)
-                # 点击登录
-                o = 0
-                p = 0
-                while 1:
-                    try:
-                        driver.find_element_by_class_name("login-btn").click()
-                        print("输入密码ing")
-                        time.sleep(2)
-                        driver.find_element_by_xpath("//input[@id='username']").click()
-                        driver.find_element_by_xpath("//input[@id='username']").clear()
-                        driver.find_element_by_xpath("//input[@id='username']").send_keys('13667272850')
-                        driver.find_element_by_xpath("//input[@id='password']").click()
-                        driver.find_element_by_xpath("//input[@id='password']").clear()
-                        driver.find_element_by_xpath("//input[@id='password']").send_keys('mssjwow123')
-                        driver.find_element_by_class_name("submit").click()
-                        time.sleep(2)
-
-                        driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").click()
-                        print("搜索关键词ing")
-                        driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").clear()
-                        driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").send_keys(
-                            keyword)
-                        driver.find_element_by_class_name("search-box-btn").click()
-                        time.sleep(3)
-
-                        # 加载更多
-                        # j = 1
-                        # for j in range(4):
-                        #     element = driver.find_element_by_xpath("//button[@class='view-more ng-scope']")
-                        #     element.click()
-                        #     time.sleep(3)
-
-                        lis = driver.find_elements_by_xpath(
-                            '//div[@class = "judgements"]/div[@class="judgement ng-scope"]')
-
-                        for i in range(len(lis)):
-                            print("开始点击")
-                            i = i + 1
-                            print("在这里")
-                            div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
-                            # title
-                            title = driver.find_element_by_xpath(div_str).text
-                            hl = hashlib.md5()
-                            hl.update(title.encode(encoding='utf-8'))
-                            # md5
-                            title_md5 = hl.hexdigest()
-
-                            print(title, keyword_obj.k_id, title_md5)
-
-                            # 存数据库
-                            crawl_obj = models.Crawl.objects.create(c_title=title, k_id=keyword_obj.k_id, c_path=title_md5)
-
-                            # models.Crawl.objects.create(c_keyword=keyword)
-                            # models.Crawl.objects.create(c_title=title)
-                            # models.Crawl.objects.create(c_path=title_md5)
-                            div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
-                            driver.find_element_by_xpath(div_str).click()
-                            print("点击完成")
-                            all_h = driver.window_handles
-                            driver.switch_to.window(all_h[1])
-                            h2 = driver.current_window_handle
-                            print('已定位到元素')
-                            time.sleep(3)
-                            try:
-                                wenshu = driver.find_element_by_xpath(
-                                    '//section[@class="paragraphs ng-isolate-scope"]').text
-                                f = open('./data/' + title_md5 + '.txt', 'a')
-                                f.write(wenshu)
-                                f.write('\n')
-                                f.close()
-                                print("成功")
-                                o = o + 1
-                            except:
-                                print("失败")
-                                p = p + 1
-
-                            driver.close()
-                            driver.switch_to.window(all_h[0])
-
-                        driver.close()
-
-                        result = "ok"
-                        json['resultCode'] = '10001'
-                        json['resultDesc'] = '爬取成功'
-                        print(o)
-                        print(p)
-                        print('关闭')
-                        # end = time.process_time()
-                        break
-                    except:
-                        print("还未定位到元素!")
 
         # 存储到数据库
+        print(keyword, pageNum)
         # UserModel.objects.create()  # 增
         # UserModel.objects.get()  # 查（只查看一条数据）
         # UserModel.objects.filter()  # 查看多条数据
         # UserModel.objects.filter().update()  # 改
         # UserModel.objects.filter().delete()  # 删
+        keyword_obj = models.Keyword.objects.create(k_keyword=keyword)
+        obj_id = keyword_obj.k_id
+        print(obj_id)
+        print(type(obj_id))
+
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        import time
+        import hashlib
+
+        # #正常模式
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_argument('--start-maximized')
+        # #无头模式启动
+        # chrome_options.add_argument('--headless')
+        # #谷歌文档提到需要加上这个属性来规避bug
+        # chrome_options.add_argument('--disable-gpu')
+        # plugin_file = './spider/utils/proxy_auth_plugin.zip'
+        # chrome_options.add_extension(plugin_file)
+
+        # firefox-headless
+        # from selenium import webdriver
+        # options = webdriver.FirefoxOptions()
+        # options.set_headless()
+        # # options.add_argument('-headless')
+        # options.add_argument('--disable-gpu')
+        # driver = webdriver.Firefox(firefox_options=options)
+        # driver.get('http://httpbin.org/user-agent')
+        # driver.get_screenshot_as_file('test.png')
+        # driver.close()
+
+        # chrome-headless
+        chrome_options = Options()
+        # 无头模式启动
+        #chrome_options.add_argument('--headless')
+        # 谷歌文档提到需要加上这个属性来规避bug
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--start-maximized')
+        # 初始化实例
+        driver = webdriver.Chrome(options=chrome_options)
+        #    self.browser = webdriver.Chrome(chrome_options=self.chrome_options)
+        # wait = WebDriverWait(driver, TIMEOUT)
+        url = "https://www.itslaw.com/search?searchMode=judgements&sortType=1&conditions=searchWord%2B%E6%B3%95%E5%BE%8B%2B1%2B%E6%B3%95%E5%BE%8B&searchView=text"
+        driver.get(url)
+        # 点击登录
+        o=0
+        p=0
+        while 1:
+            try:
+                driver.find_element_by_class_name("login-btn").click()
+                print("输入密码ing")
+                time.sleep(2)
+                driver.find_element_by_xpath("//input[@id='username']").click()
+                driver.find_element_by_xpath("//input[@id='username']").clear()
+                driver.find_element_by_xpath("//input[@id='username']").send_keys('13667272850')
+                driver.find_element_by_xpath("//input[@id='password']").click()
+                driver.find_element_by_xpath("//input[@id='password']").clear()
+                driver.find_element_by_xpath("//input[@id='password']").send_keys('mssjwow123')
+                driver.find_element_by_class_name("submit").click()
+                time.sleep(2)
+
+                driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").click()
+                print("搜索关键词ing")
+                driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").clear()
+                driver.find_element_by_xpath("//input[@placeholder='输入“?”定位到当事人、律师、法官、法院、标题、法院观点']").send_keys(keyword)
+                driver.find_element_by_class_name("search-box-btn").click()
+                time.sleep(3)
+
+                # 加载更多
+                # j = 1
+                # for j in range(4):
+                #     element = driver.find_element_by_xpath("//button[@class='view-more ng-scope']")
+                #     element.click()
+                #     time.sleep(3)
+
+                lis = driver.find_elements_by_xpath('//div[@class = "judgements"]/div[@class="judgement ng-scope"]')
+
+                for i in range(len(lis)):
+                    print("开始点击")
+                    i = i + 1
+                    print("在这里")
+                    div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
+                    #title
+                    title = driver.find_element_by_xpath(div_str).text
+                    hl = hashlib.md5()
+                    hl.update(title.encode(encoding='utf-8'))
+                    #md5
+                    title_md5=hl.hexdigest()
+
+                    print(title,obj_id,title_md5)
+
+                    # 存数据库
+                    models.Crawl.objects.create(c_title=title, c_path=title_md5, k_id=obj_id, c_keyword=keyword)
+                    # models.Crawl.objects.create(c_keyword=keyword)
+                    # models.Crawl.objects.create(c_title=title)
+                    # models.Crawl.objects.create(c_path=title_md5)
+                    div_str = '//div[@class="judgements"]/div[{}]/div[2]/h3/a'.format(i)
+                    driver.find_element_by_xpath(div_str).click()
+                    print("点击完成")
+                    all_h = driver.window_handles
+                    driver.switch_to.window(all_h[1])
+                    h2 = driver.current_window_handle
+                    print('已定位到元素')
+                    time.sleep(3)
+                    try:
+                        wenshu = driver.find_element_by_xpath('//section[@class="paragraphs ng-isolate-scope"]').text
+                        f = open('./data/' + title_md5 + '.txt', 'a')
+                        f.write(wenshu)
+                        f.write('\n')
+                        f.close()
+                        print("成功")
+                        o=o+1
+                    except:
+                        print("失败")
+                        p=p+1
+
+                    driver.close()
+                    driver.switch_to.window(all_h[0])
+
+                driver.close()
+
+                result = "ok"
+                json['resultCode'] = '10001'
+                json['resultDesc'] = '爬取成功'
+                print(o)
+                print(p)
+                print('关闭')
+                # end = time.process_time()
+                break
+            except:
+                print("还未定位到元素!")
 
     return JsonResponse(json)
 
 
-#调用阅读理解模块
+
 def readcomprehend(request):
     print('进入接口readcomprehend')
     json = {}
 
     if request.method == "POST":
         questions = request.POST.get("questions")
-        #print(questions)
-
-
-
-        #print (return_data)
+        print(questions)
 
     json['resultCode'] = '10001'
     json['resultDesc'] = '操作成功'
@@ -241,8 +222,9 @@ def readcomprehend(request):
 
     return JsonResponse(json)
 
+
 def dataAnalysis(request):
-    print('进入接口dataAnalysis')
+    print('进入接口classAnalysis')
     json = {}
     if request.method == "POST":
         questions = request.POST.get('questions')
@@ -294,3 +276,19 @@ def clusterAnalysis(request):
     json = {}
 
     return JsonResponse(json)
+
+# def read(request):
+#     question = request.POST.get("question")
+#     if question:
+#         UserModel.objects.create()  # 增
+#         UserModel.objects.get()  # 查（只查看一条数据）
+#         UserModel.objects.filter()  # 查看多条数据
+#         UserModel.objects.filter().update()  # 改
+#         UserModel.objects.filter().delete()  # 删
+#         QsModel.objects.create(
+#             question = question,)
+#         result = "OK"
+#     else:
+#         result = "Not OK"
+#     print(question)
+#     return render(request, "login/read.html", locals())
